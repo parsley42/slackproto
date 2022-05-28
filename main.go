@@ -29,11 +29,17 @@ func msgBlockFixed(msg string) slack.MsgOption {
 }
 
 func msgBlockRichFixed(user, msg string) slack.MsgOption {
-	userElement := slack.NewRichTextSectionUserElement(user, nil)
+	// messageText := slack.NewTextBlockObject("mrkdwn", user, false, false)
+	// messageSection := slack.NewSectionBlock(messageText, nil, nil)
+	fixedElement := slack.NewRichTextSectionTextElement(msg, nil)
+	richSection := slack.NewRichTextSection(fixedElement)
+	richSection.Type = slack.RTEPreformatted
+	return slack.MsgOptionBlocks(slack.NewRichTextBlock("FaYCD", richSection))
 }
 
 func sendBlock(channel string, client slack.Client, block slack.MsgOption) {
-	channelID, timestamp, err := client.PostMessage(channel, slack.MsgOptionText("the robot sent you a message", false), block)
+	// channelID, timestamp, err := client.PostMessage(channel, slack.MsgOptionAsUser(true), slack.MsgOptionText("the robot sent you a message", false), block)
+	channelID, timestamp, err := client.PostMessage(channel, slack.MsgOptionAsUser(true), block)
 	if err != nil {
 		fmt.Printf("Could not send message: %v\n", err)
 	} else {
@@ -61,7 +67,7 @@ func sendUserFixed(user, channel, msg string, client slack.Client) {
 	sbytes = bytes.Replace(sbytes, []byte(">"), []byte("&gt;"), -1)
 	rmsg := string(sbytes)
 	text := fmt.Sprintf("%s %s", user, rmsg)
-	block := msgBlockFixed(text)
+	block := msgBlockRichFixed(user, text)
 	sendBlock(channel, client, block)
 }
 
@@ -87,7 +93,7 @@ func main() {
 		slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
 	)
 	text := "Have a look:\n*<https://github.com/parsley42|David Parsley - Coder>*; Pretty nifty, eh? I do, however, want to be sure that long lines aren't broken up to the two-column width. That would SUCK. Just to be sure, I'm going to make this text *SUPER* long - I mean _really_, it's got to be a good test, right? How wide are those columns anyway? I don't know, but I can tell you this - this message has *GOT* to be wider than a single column. It'll be a good test for sure."
-	sendUserRaw(user, channel, text, *client)
-	sendUserPlain(user, channel, text, *client)
+	// sendUserRaw(user, channel, text, *client)
+	// sendUserPlain(user, channel, text, *client)
 	sendUserFixed(user, channel, text, *client)
 }
