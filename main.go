@@ -28,6 +28,10 @@ func msgBlockFixed(msg string) slack.MsgOption {
 	return slack.MsgOptionBlocks(messageSection)
 }
 
+func msgBlockRichFixed(user, msg string) slack.MsgOption {
+	userElement := slack.NewRichTextSectionUserElement(user, nil)
+}
+
 func sendBlock(channel string, client slack.Client, block slack.MsgOption) {
 	channelID, timestamp, err := client.PostMessage(channel, slack.MsgOptionText("the robot sent you a message", false), block)
 	if err != nil {
@@ -82,7 +86,7 @@ func main() {
 		slack.OptionDebug(true),
 		slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
 	)
-	text := "Have a look:\n*<https://github.com/parsley42|David Parsley - Coder>*"
+	text := "Have a look:\n*<https://github.com/parsley42|David Parsley - Coder>*; Pretty nifty, eh? I do, however, want to be sure that long lines aren't broken up to the two-column width. That would SUCK. Just to be sure, I'm going to make this text *SUPER* long - I mean _really_, it's got to be a good test, right? How wide are those columns anyway? I don't know, but I can tell you this - this message has *GOT* to be wider than a single column. It'll be a good test for sure."
 	sendUserRaw(user, channel, text, *client)
 	sendUserPlain(user, channel, text, *client)
 	sendUserFixed(user, channel, text, *client)
