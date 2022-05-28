@@ -40,13 +40,17 @@ func main() {
 		fmt.Println("Missing SLACK_CHANNEL in environment")
 		os.Exit(1)
 	}
+	user, ok := os.LookupEnv("SLACK_USER")
+	if !ok {
+		fmt.Println("Missing SLACK_CHANNEL in environment")
+		os.Exit(1)
+	}
 	client := slack.New(
 		token,
 		slack.OptionDebug(true),
 		slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
 	)
-
-	text := "Have a look:\n*<github.com/parsley42|David Parsley - Coder>*"
+	text := fmt.Sprintf("%s - Have a look:\n*<https://github.com/parsley42|David Parsley - Coder>*", user)
 	rawMessage := msgBlockRaw(text)
 	sendBlock(channel, *client, rawMessage)
 	plainMessage := msgBlockPlain(text)
